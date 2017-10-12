@@ -18,6 +18,10 @@ table provided by the `"emoji" package <https://github.com/carpedm20/emoji>`_.
 *Disclaimer: This extension only works in spaCy v2.0 (currently in alpha) and
 is still experimental.*
 
+.. image:: https://img.shields.io/pypi/v/spacymoji.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/spacymoji
+    :alt: pypi Version
+
 ⏳ Installation
 ===============
 
