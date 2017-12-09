@@ -88,7 +88,6 @@ def test_lookup(nlp):
     assert doc[3]._.emoji_desc == 'David Bowie'
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize('pattern_id', ['CUSTOM_ID'])
 def test_pattern_id(nlp, pattern_id):
     emoji = Emoji(nlp, pattern_id=pattern_id)
