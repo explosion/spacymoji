@@ -1,7 +1,7 @@
 spacymoji: emoji for spaCy
 **************************
 
-`spaCy v2.0 <https://alpha.spacy.io/usage/v2>`_ extension and pipeline component
+`spaCy v2.0 <https://spacy.io/usage/v2>`_ extension and pipeline component
 for adding emoji meta data to ``Doc`` objects. Detects emoji consisting of one
 or more unicode characters, and can optionally merge multi-char emoji (combined
 pictures, emoji with skin tone modifiers) into one token. Human-readable emoji
@@ -10,13 +10,14 @@ be provided for your own descriptions. The extension sets the custom ``Doc``,
 ``Token`` and ``Span`` attributes ``._.is_emoji``, ``._.emoji_desc``,
 ``._.has_emoji`` and ``._.emoji``. You can read more about custom pipeline
 components and extension attributes
-`here <https://alpha.spacy.io/usage/processing-pipelines>`_.
+`here <https://spacy.io/usage/processing-pipelines>`_.
 
 Emoji are matched using spaCy's ``PhraseMatcher``, and looked up in the data
 table provided by the `"emoji" package <https://github.com/carpedm20/emoji>`_.
 
-*Disclaimer: This extension only works in spaCy v2.0 (currently in alpha) and
-is still experimental.*
+.. image:: https://img.shields.io/github/release/ines/spacymoji.svg?style=flat-square
+    :target: https://github.com/ines/spacymoji/releases
+    :alt: Current Release Version
 
 .. image:: https://img.shields.io/pypi/v/spacymoji.svg?style=flat-square
     :target: https://pypi.python.org/pypi/spacymoji
@@ -25,7 +26,7 @@ is still experimental.*
 ⏳ Installation
 ===============
 
-``spacymoji`` requires ``spacy-nightly`` v2.0.0a17 or higher.
+``spacymoji`` requires ``spacy`` v2.0.0 or higher.
 
 .. code:: bash
 
@@ -59,7 +60,7 @@ anywhere in your pipeline.
 
 ``spacymoji`` only cares about the token text, so you can use it on a blank
 ``Language`` instance (it should work for all
-`available languages <https://alpha.spacy.io/usage/models#languages>`_!), or in
+`available languages <https://spacy.io/usage/models#languages>`_!), or in
 a pipeline with a loaded model. If you're loading a model and your pipeline
 includes a tagger, parser and entity recognizer, make sure to add  the emoji
 component as ``first=True``, so the spans are merged right after tokenization,
@@ -72,7 +73,7 @@ Available attributes
 The extension sets attributes on the ``Doc``, ``Span`` and ``Token``. You can
 change the attribute names on initialisation of the extension. For more details
 on custom components and attributes, see the
-`processing pipelines documentation <https://alpha.spacy.io/usage/processing-pipelines#custom-components>`_.
+`processing pipelines documentation <https://spacy.io/usage/processing-pipelines#custom-components>`_.
 
 ====================== ======= ===
 ``Token._.is_emoji``   bool    Whether the token is an emoji.
