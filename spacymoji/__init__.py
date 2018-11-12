@@ -56,7 +56,7 @@ class Emoji(object):
         self.merge_spans = merge_spans
         self.lookup = lookup
         self.matcher = PhraseMatcher(nlp.vocab)
-        emoji_patterns = [nlp(emoji) for emoji in EMOJI.keys()]
+        emoji_patterns = list(nlp.tokenizer.pipe(EMOJI.keys()))
         self.matcher.add(pattern_id, None, *emoji_patterns)
         # Add attributes
         Doc.set_extension(self._has_emoji, getter=self.has_emoji)
