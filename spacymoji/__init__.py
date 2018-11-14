@@ -37,7 +37,8 @@ class Emoji(object):
     name = 'emoji'
 
     def __init__(self, nlp, merge_spans=True, lookup={}, pattern_id='EMOJI',
-                 attrs=('has_emoji', 'is_emoji', 'emoji_desc', 'emoji')):
+                 attrs=('has_emoji', 'is_emoji', 'emoji_desc', 'emoji'),
+                 force_extension=True):
         """Initialise the pipeline component.
 
         nlp (Language): The shared nlp object. Used to initialise the matcher
@@ -59,12 +60,12 @@ class Emoji(object):
         emoji_patterns = list(nlp.tokenizer.pipe(EMOJI.keys()))
         self.matcher.add(pattern_id, None, *emoji_patterns)
         # Add attributes
-        Doc.set_extension(self._has_emoji, getter=self.has_emoji)
-        Doc.set_extension(self._emoji, getter=self.iter_emoji)
-        Span.set_extension(self._has_emoji, getter=self.has_emoji)
-        Span.set_extension(self._emoji, getter=self.iter_emoji)
-        Token.set_extension(self._is_emoji, default=False)
-        Token.set_extension(self._emoji_desc, getter=self.get_emoji_desc)
+        Doc.set_extension(self._has_emoji, getter=self.has_emoji, force=force_extension)
+        Doc.set_extension(self._emoji, getter=self.iter_emoji, force=force_extension)
+        Span.set_extension(self._has_emoji, getter=self.has_emoji, force=force_extension)
+        Span.set_extension(self._emoji, getter=self.iter_emoji, force=force_extension)
+        Token.set_extension(self._is_emoji, default=False, force=force_extension)
+        Token.set_extension(self._emoji_desc, getter=self.get_emoji_desc, force=force_extension)
 
     def __call__(self, doc):
         """Apply the pipeline component to a `Doc` object.
