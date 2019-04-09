@@ -81,8 +81,10 @@ class Emoji(object):
                 token._.set(self._is_emoji, True)
             spans.append(span)
         if self.merge_spans:
-            for span in spans:
-                span.merge()
+            with doc.retokenize() as retokenizer:
+                for span in spans:
+                    if len(span) > 1:
+                        retokenizer.merge(span)
         return doc
 
     def has_emoji(self, tokens):
