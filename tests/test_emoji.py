@@ -66,6 +66,19 @@ def test_usage_merge_spans(nlp, emoji):
     assert len(doc[2].text) > 1
 
 
+def test_usage_merge_overlapping(nlp):
+    text = '🇺🇸🇦🇷'
+    assert len(text) == 4
+
+    emoji = Emoji(nlp)
+    nlp.add_pipe(emoji, last=True)
+    doc = nlp(text)
+
+    assert len(doc) == 2
+    assert doc[0].orth_ == text[0:2]
+    assert doc[1].orth_ == text[2:4]
+
+
 def test_custom_attrs():
     attrs = ('contains_emoji', 'equals_emoji', 'emoji_details', 'all_emoji')
     nlp = English()
