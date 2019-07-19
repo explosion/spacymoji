@@ -67,6 +67,14 @@ class Emoji(object):
         Token.set_extension(self._is_emoji, default=False, force=force_extension)
         Token.set_extension(self._emoji_desc, getter=self.get_emoji_desc, force=force_extension)
 
+    @staticmethod
+    def _merge_spans(retokenizer, spans):
+        last = 0  # for detecting overlapping spans
+        for span in spans:
+            if span.start >= last and len(span) > 1:
+                retokenizer.merge(span)
+                last = span.end
+
     def __call__(self, doc):
         """Apply the pipeline component to a `Doc` object.
 
@@ -76,15 +84,13 @@ class Emoji(object):
         matches = self.matcher(doc)
         spans = []  # keep spans here to merge them later
         for _, start, end in matches:
-            span = doc[start : end]
+            span = doc[start:end]
             for token in span:
                 token._.set(self._is_emoji, True)
             spans.append(span)
         if self.merge_spans:
             with doc.retokenize() as retokenizer:
-                for span in spans:
-                    if len(span) > 1:
-                        retokenizer.merge(span)
+                self._merge_spans(retokenizer, spans)
         return doc
 
     def has_emoji(self, tokens):
