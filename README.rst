@@ -1,7 +1,7 @@
 spacymoji: emoji for spaCy
 **************************
 
-`spaCy v2.0 <https://spacy.io/usage/v2>`_ extension and pipeline component
+`spaCy v3.0 <https://spacy.io/usage/v3>`_ extension and pipeline component
 for adding emoji meta data to ``Doc`` objects. Detects emoji consisting of one
 or more unicode characters, and can optionally merge multi-char emoji (combined
 pictures, emoji with skin tone modifiers) into one token. Human-readable emoji
@@ -26,7 +26,7 @@ table provided by the `"emoji" package <https://github.com/carpedm20/emoji>`_.
 ⏳ Installation
 ===============
 
-``spacymoji`` requires ``spacy`` v2.0.0 or higher.
+``spacymoji`` requires ``spacy`` v3.0.0 or higher.
 
 .. code:: bash
 
@@ -35,10 +35,8 @@ table provided by the `"emoji" package <https://github.com/carpedm20/emoji>`_.
 ☝️ Usage
 ========
 
-Import the component and initialise it with the shared ``nlp`` object (i.e. an
-instance of ``Language``), which is used to initialise the ``PhraseMatcher``
-with the shared vocab, and create the match patterns. Then add the component
-anywhere in your pipeline.
+Import the component and add it anywhere in your pipeline using the string
+name of the ``Emoji`` component factory:
 
 .. code:: python
 
@@ -46,8 +44,7 @@ anywhere in your pipeline.
     from spacymoji import Emoji
 
     nlp = spacy.load('en')
-    emoji = Emoji(nlp)
-    nlp.add_pipe(emoji, first=True)
+    nlp.add_pipe("emoji", first=True)
 
     doc = nlp(u"This is a test 😻 👍🏿")
     assert doc._.has_emoji == True
@@ -71,7 +68,8 @@ Available attributes
 --------------------
 
 The extension sets attributes on the ``Doc``, ``Span`` and ``Token``. You can
-change the attribute names on initialisation of the extension. For more details
+change the attribute names (and other parameters of the Emoji component) by passing
+them via the ``config`` parameter in the ``nlp.add_pipe(...)`` method. For more details
 on custom components and attributes, see the
 `processing pipelines documentation <https://spacy.io/usage/processing-pipelines#custom-components>`_.
 
@@ -87,7 +85,8 @@ on custom components and attributes, see the
 Settings
 --------
 
-On initialisation of ``Emoji``, you can define the following settings:
+You can configure the ``Emoji`` component by setting any of the following parameters in
+the ``config`` dictionary:
 
 =============== ============ ===
 ``nlp``         ``Language`` The shared ``nlp`` object. Used to initialise the matcher with the shared ``Vocab``, and create ``Doc`` match patterns.
@@ -99,8 +98,8 @@ On initialisation of ``Emoji``, you can define the following settings:
 
 .. code:: python
 
-    emoji = Emoji(nlp, attrs=('has_e', 'is_e', 'e_desc', 'e'), lookup={u'👨‍🎤': u'David Bowie'})
-    nlp.add_pipe(emoji)
+    emoji_config = {"attrs": ("has_e", "is_e", "e_desc", "e"), lookup={"👨‍🎤": "David Bowie"})
+    nlp.add_pipe(emoji, first=True, config=emoji_config)
     doc = nlp(u"We can be 👨‍🎤 heroes")
     assert doc[3]._.is_e
     assert doc[3]._.e_desc == u'David Bowie'
