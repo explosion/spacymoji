@@ -1,18 +1,45 @@
 # coding: utf8
 from __future__ import unicode_literals
+from typing import Dict, Optional, Tuple
 
 from spacy.tokens import Doc, Span, Token
 from spacy.matcher import PhraseMatcher
+from spacy.language import Language
+from spacy.util import filter_spans
+
 from emoji import UNICODE_EMOJI
 
 from .about import __version__
 
 # make sure multi-character emoji don't contain whitespace
-EMOJI = {e.replace(' ', ''): t for e, t in UNICODE_EMOJI.items()}
+EMOJI = {e.replace(" ", ""): t for e, t in UNICODE_EMOJI.items()}
+
+DEFAULT_ATTRS = ("has_emoji", "is_emoji", "emoji_desc", "emoji")
+
+DEFAULT_CONFIG = {
+    "merge_spans": True,
+    "lookup": {},
+    "pattern_id": "EMOJI",
+    "attrs": DEFAULT_ATTRS,
+    "force_extension": True,
+}
+
+
+@Language.factory("emoji", default_config=DEFAULT_CONFIG)
+def create_emoji(
+    nlp: Language,
+    name: str,
+    merge_spans: Optional[bool] = True,
+    lookup: Optional[Dict[str, str]] = None,
+    pattern_id: Optional[str] = "EMOJI",
+    attrs: Optional[Tuple[str, str, str, str]] = DEFAULT_ATTRS,
+    force_extension: Optional[bool] = True,
+):
+    return Emoji(nlp, merge_spans, lookup, pattern_id, attrs, force_extension)
 
 
 class Emoji(object):
-    """spaCy v2.0 pipeline component for adding emoji meta data to `Doc` objects.
+    """spaCy v3.0 pipeline component for adding emoji meta data to `Doc` objects.
     Detects emoji consisting of one or more unicode characters, and can
     optionally merge multi-char emoji (combined pictures, emoji with skin tone
     modifiers) into one token. Emoji are matched using spaCy's `PhraseMatcher`,
@@ -34,11 +61,12 @@ class Emoji(object):
         >>> assert len(doc._.emoji) == 2
         >>> assert doc._.emoji[1] == (u'👍🏿', 5, u'thumbs up dark skin tone')
     """
-    name = 'emoji'
 
-    def __init__(self, nlp, merge_spans=True, lookup={}, pattern_id='EMOJI',
-                 attrs=('has_emoji', 'is_emoji', 'emoji_desc', 'emoji'),
-                 force_extension=True):
+    name = "emoji"
+
+    def __init__(
+        self, nlp, merge_spans=True, lookup=None, pattern_id="EMOJI", attrs=DEFAULT_ATTRS, force_extension=True
+    ):
         """Initialise the pipeline component.
 
         nlp (Language): The shared nlp object. Used to initialise the matcher
@@ -55,7 +83,7 @@ class Emoji(object):
         """
         self._has_emoji, self._is_emoji, self._emoji_desc, self._emoji = attrs
         self.merge_spans = merge_spans
-        self.lookup = lookup
+        self.lookup = lookup or {}
         self.matcher = PhraseMatcher(nlp.vocab)
         emoji_patterns = list(nlp.tokenizer.pipe(EMOJI.keys()))
         self.matcher.add(pattern_id, None, *emoji_patterns)
@@ -73,14 +101,13 @@ class Emoji(object):
         doc (Doc): The `Doc` returned by the previous pipeline component.
         RETURNS (Doc): The modified `Doc` object.
         """
-        matches = self.matcher(doc)
-        spans = []  # keep spans here to merge them later
-        for _, start, end in matches:
-            span = doc[start : end]
+        spans = self.matcher(doc, as_spans=True)
+        for span in spans:
             for token in span:
                 token._.set(self._is_emoji, True)
-            spans.append(span)
+
         if self.merge_spans:
+            spans = filter_spans(spans)
             with doc.retokenize() as retokenizer:
                 for span in spans:
                     if len(span) > 1:
@@ -91,9 +118,7 @@ class Emoji(object):
         return any(token._.get(self._is_emoji) for token in tokens)
 
     def iter_emoji(self, tokens):
-        return [(t.text, i, t._.get(self._emoji_desc))
-                for i, t in enumerate(tokens)
-                if t._.get(self._is_emoji)]
+        return [(t.text, i, t._.get(self._emoji_desc)) for i, t in enumerate(tokens) if t._.get(self._is_emoji)]
 
     def get_emoji_desc(self, token):
         if token.text in self.lookup:
@@ -101,5 +126,5 @@ class Emoji(object):
         if token.text in EMOJI:
             desc = EMOJI[token.text]
             # Here we're converting shortcodes, e.g. ":man_getting_haircut:"
-            return desc.replace('_', ' ').replace(':', '')
+            return desc.replace("_", " ").replace(":", "")
         return None
