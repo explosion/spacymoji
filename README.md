@@ -11,6 +11,7 @@ be provided for your own descriptions. The extension sets the custom `Doc`,
 Emoji are matched using spaCy's [`PhraseMatcher`](https://spacy.io/api/phrasematcher), and looked up in the data
 table provided by the [`emoji` package](https://github.com/carpedm20/emoji).
 
+[![Azure Pipelines](https://img.shields.io/azure-devops/build/explosion-ai/public/22/master.svg?logo=azure-pipelines&style=flat-square&label=build)](https://dev.azure.com/explosion-ai/public/_build?definitionId=22)
 [![Current Release Version](https://img.shields.io/github/release/explosion/spacymoji.svg?style=flat-square&logo=github)](https://github.com/explosion/spacymoji/releases)
 [![pypi Version](https://img.shields.io/pypi/v/spacymoji.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/spacymoji/)
 
