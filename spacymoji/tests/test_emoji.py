@@ -1,9 +1,5 @@
-# coding: utf-8
-from __future__ import unicode_literals
-
 from spacy.lang.en import English
 import pytest
-
 from spacymoji import Emoji
 
 
@@ -103,13 +99,11 @@ def test_final_variation_selector(nlp):
     part of the emoji, which ends up being the first byte of the following
     token instead, if the emoji is not separated from the following text by
     a space.
-
-    To work properly, text can be preprocessed by inserting a space between
-    the variation selector and any directly following ascii character, e.g.:
-
-    VARIATION_THEN_ASCII = re.compile(r"(\ufe0f)(\w)", flags=re.ASCII)
-    VARIATION_THEN_ASCII.sub(r"\1 \2", txt)
     """
+    # To work properly, text can be preprocessed by inserting a space between
+    # the variation selector and any directly following ascii character, e.g.:
+    # VARIATION_THEN_ASCII = re.compile(r"(\ufe0f)(\w)", flags=re.ASCII)
+    # VARIATION_THEN_ASCII.sub(r"\1 \2", txt)
     nlp.add_pipe("emoji")
     txt = "🧟‍♀️This is a text with composed emojis 🧙‍♀️"
     doc = nlp(txt)
@@ -117,5 +111,7 @@ def test_final_variation_selector(nlp):
     # These are the 4 bytes representing the first emoji
     assert txt[:4].encode("raw_unicode_escape") == b"\\U0001f9df\\u200d\\u2640\\ufe0f"
     assert doc[0].orth_ == "🧟‍♀️"
-    assert doc[0].orth_.encode("raw_unicode_escape") == b"\\U0001f9df\\u200d\\u2640\\ufe0f"
+    assert (
+        doc[0].orth_.encode("raw_unicode_escape") == b"\\U0001f9df\\u200d\\u2640\\ufe0f"
+    )
     assert doc[1].orth_[0] == "T"

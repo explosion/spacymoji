@@ -1,17 +1,12 @@
-# coding: utf8
-from __future__ import unicode_literals
-from typing import Dict, Optional, Tuple
-
+from typing import Dict, Optional, Tuple, List, Union
 from spacy.tokens import Doc, Span, Token
 from spacy.matcher import PhraseMatcher
 from spacy.language import Language
 from spacy.util import filter_spans
-
 from emoji import UNICODE_EMOJI
 
-from .about import __version__
 
-# make sure multi-character emoji don't contain whitespace
+# Make sure multi-character emoji don't contain whitespace
 EMOJI = {e.replace(" ", ""): t for e, t in UNICODE_EMOJI.items()}
 
 DEFAULT_ATTRS = ("has_emoji", "is_emoji", "emoji_desc", "emoji")
@@ -29,16 +24,16 @@ DEFAULT_CONFIG = {
 def create_emoji(
     nlp: Language,
     name: str,
-    merge_spans: Optional[bool] = True,
+    merge_spans: bool = True,
     lookup: Optional[Dict[str, str]] = None,
-    pattern_id: Optional[str] = "EMOJI",
-    attrs: Optional[Tuple[str, str, str, str]] = DEFAULT_ATTRS,
-    force_extension: Optional[bool] = True,
+    pattern_id: str = "EMOJI",
+    attrs: Tuple[str, str, str, str] = DEFAULT_ATTRS,
+    force_extension: bool = True,
 ):
     return Emoji(nlp, merge_spans, lookup, pattern_id, attrs, force_extension)
 
 
-class Emoji(object):
+class Emoji:
     """spaCy v3.0 pipeline component for adding emoji meta data to `Doc` objects.
     Detects emoji consisting of one or more unicode characters, and can
     optionally merge multi-char emoji (combined pictures, emoji with skin tone
@@ -49,24 +44,29 @@ class Emoji(object):
     USAGE:
         >>> import spacy
         >>> from spacymoji import Emoji
-        >>> nlp = spacy.load('en')
-        >>> emoji = Emoji(nlp)
-        >>> nlp.add_pipe(emoji, first=True)
-        >>> doc = nlp(u"This is a test 😻 👍🏿")
-        >>> assert doc._.has_emoji == True
-        >>> assert doc[2:5]._.has_emoji == True
-        >>> assert doc[0]._.is_emoji == False
-        >>> assert doc[4]._.is_emoji == True
-        >>> assert doc[5]._.emoji_desc == u'thumbs up dark skin tone'
+        >>> nlp = spacy.load("en_core_web_sm")
+        >>> nlp.add_pipe("emoji", first=True)
+        >>> doc = nlp("This is a test 😻 👍🏿")
+        >>> assert doc._.has_emoji is True
+        >>> assert doc[2:5]._.has_emoji is True
+        >>> assert doc[0]._.is_emoji is False
+        >>> assert doc[4]._.is_emoji is True
+        >>> assert doc[5]._.emoji_desc == "thumbs up dark skin tone"
         >>> assert len(doc._.emoji) == 2
-        >>> assert doc._.emoji[1] == (u'👍🏿', 5, u'thumbs up dark skin tone')
+        >>> assert doc._.emoji[1] == ("👍🏿", 5, "thumbs up dark skin tone")
     """
 
     name = "emoji"
 
     def __init__(
-        self, nlp, merge_spans=True, lookup=None, pattern_id="EMOJI", attrs=DEFAULT_ATTRS, force_extension=True
-    ):
+        self,
+        nlp: Language,
+        merge_spans: bool = True,
+        lookup: Optional[Dict[str, str]] = None,
+        pattern_id: str = "EMOJI",
+        attrs: Tuple[str, str, str, str] = DEFAULT_ATTRS,
+        force_extension: bool = True,
+    ) -> None:
         """Initialise the pipeline component.
 
         nlp (Language): The shared nlp object. Used to initialise the matcher
@@ -90,12 +90,16 @@ class Emoji(object):
         # Add attributes
         Doc.set_extension(self._has_emoji, getter=self.has_emoji, force=force_extension)
         Doc.set_extension(self._emoji, getter=self.iter_emoji, force=force_extension)
-        Span.set_extension(self._has_emoji, getter=self.has_emoji, force=force_extension)
+        Span.set_extension(
+            self._has_emoji, getter=self.has_emoji, force=force_extension
+        )
         Span.set_extension(self._emoji, getter=self.iter_emoji, force=force_extension)
         Token.set_extension(self._is_emoji, default=False, force=force_extension)
-        Token.set_extension(self._emoji_desc, getter=self.get_emoji_desc, force=force_extension)
+        Token.set_extension(
+            self._emoji_desc, getter=self.get_emoji_desc, force=force_extension
+        )
 
-    def __call__(self, doc):
+    def __call__(self, doc: Doc) -> Doc:
         """Apply the pipeline component to a `Doc` object.
 
         doc (Doc): The `Doc` returned by the previous pipeline component.
@@ -114,13 +118,17 @@ class Emoji(object):
                         retokenizer.merge(span)
         return doc
 
-    def has_emoji(self, tokens):
+    def has_emoji(self, tokens: Union[Doc, Span]) -> bool:
         return any(token._.get(self._is_emoji) for token in tokens)
 
-    def iter_emoji(self, tokens):
-        return [(t.text, i, t._.get(self._emoji_desc)) for i, t in enumerate(tokens) if t._.get(self._is_emoji)]
+    def iter_emoji(self, tokens: Union[Doc, Span]) -> List[Tuple[str, int, str]]:
+        return [
+            (t.text, i, t._.get(self._emoji_desc))
+            for i, t in enumerate(tokens)
+            if t._.get(self._is_emoji)
+        ]
 
-    def get_emoji_desc(self, token):
+    def get_emoji_desc(self, token: Token) -> Optional[str]:
         if token.text in self.lookup:
             return self.lookup[token.text]
         if token.text in EMOJI:
