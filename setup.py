@@ -3,4 +3,4 @@
 if __name__ == "__main__":
     from setuptools import setup, find_packages
 
-    setup(name="sense2vec", packages=find_packages())
+    setup(name="spacymoji", packages=find_packages())
