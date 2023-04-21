@@ -14,6 +14,7 @@ Emoji are matched using spaCy's
 [`PhraseMatcher`](https://spacy.io/api/phrasematcher), and looked up in the data
 table provided by the [`emoji` package](https://github.com/carpedm20/emoji).
 
+[![tests](https://github.com/explosion/spacymoji/actions/workflows/tests.yml/badge.svg)](https://github.com/explosion/spacymoji/actions/workflows/tests.yml)
 [![Current Release Version](https://img.shields.io/github/release/explosion/spacymoji.svg?style=flat-square&logo=github)](https://github.com/explosion/spacymoji/releases)
 [![pypi Version](https://img.shields.io/pypi/v/spacymoji.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/spacymoji/)
 
