@@ -1,23 +1,26 @@
 # spacymoji: emoji for spaCy
 
-[spaCy](https://spacy.io) extension and pipeline component
-for adding emoji meta data to `Doc` objects. Detects emoji consisting of one
-or more unicode characters, and can optionally merge multi-char emoji (combined
-pictures, emoji with skin tone modifiers) into one token. Human-readable emoji
-descriptions are added as a custom attribute, and an optional lookup table can
-be provided for your own descriptions. The extension sets the custom `Doc`,
-`Token` and `Span` attributes `._.is_emoji`, `._.emoji_desc`, `._.has_emoji` and `._.emoji`. You can read more about custom pipeline components and extension attributes [here](https://spacy.io/usage/processing-pipelines).
+[spaCy](https://spacy.io) extension and pipeline component for adding emoji meta
+data to `Doc` objects. Detects emoji consisting of one or more unicode
+characters, and can optionally merge multi-char emoji (combined pictures, emoji
+with skin tone modifiers) into one token. Human-readable emoji descriptions are
+added as a custom attribute, and an optional lookup table can be provided for
+your own descriptions. The extension sets the custom `Doc`, `Token` and `Span`
+attributes `._.is_emoji`, `._.emoji_desc`, `._.has_emoji` and `._.emoji`. You
+can read more about custom pipeline components and extension attributes
+[here](https://spacy.io/usage/processing-pipelines).
 
-Emoji are matched using spaCy's [`PhraseMatcher`](https://spacy.io/api/phrasematcher), and looked up in the data
+Emoji are matched using spaCy's
+[`PhraseMatcher`](https://spacy.io/api/phrasematcher), and looked up in the data
 table provided by the [`emoji` package](https://github.com/carpedm20/emoji).
 
-[![Azure Pipelines](https://img.shields.io/azure-devops/build/explosion-ai/public/22/master.svg?logo=azure-pipelines&style=flat-square&label=build)](https://dev.azure.com/explosion-ai/public/_build?definitionId=22)
 [![Current Release Version](https://img.shields.io/github/release/explosion/spacymoji.svg?style=flat-square&logo=github)](https://github.com/explosion/spacymoji/releases)
 [![pypi Version](https://img.shields.io/pypi/v/spacymoji.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/spacymoji/)
 
 # ⏳ Installation
 
-`spacymoji` requires `spacy` v3.0.0 or higher. For spaCy v2.x, instally `spacymoji==2.0.0`.
+`spacymoji` requires `spacy` v3.0.0 or higher. For spaCy v2.x, instally
+`spacymoji==2.0.0`.
 
 ```bash
 pip install spacymoji
@@ -25,8 +28,8 @@ pip install spacymoji
 
 # ☝️ Usage
 
-Import the component and add it anywhere in your pipeline using the string
-name of the `"emoji"` component factory:
+Import the component and add it anywhere in your pipeline using the string name
+of the `"emoji"` component factory:
 
 ```python
 import spacy
@@ -45,19 +48,19 @@ assert doc._.emoji[1] == ("👍🏿", 5, "thumbs up dark skin tone")
 
 `spacymoji` only cares about the token text, so you can use it on a blank
 `Language` instance (it should work for all
-[available languages](https://spacy.io/usage/models#languages)!), or in
-a pipeline with a loaded pipeline. If your pipeline
-includes a tagger, parser and entity recognizer, make sure to add the emoji
-component as `first=True`, so the spans are merged right after tokenization,
-and _before_ the document is parsed. If your text contains a lot of emoji, this
-might even give you a nice boost in parser accuracy.
+[available languages](https://spacy.io/usage/models#languages)!), or in a
+pipeline with a loaded pipeline. If your pipeline includes a tagger, parser and
+entity recognizer, make sure to add the emoji component as `first=True`, so the
+spans are merged right after tokenization, and _before_ the document is parsed.
+If your text contains a lot of emoji, this might even give you a nice boost in
+parser accuracy.
 
 ## Available attributes
 
-The extension sets attributes on the `Doc`, `Span` and `Token`. You can
-change the attribute names (and other parameters of the Emoji component) by passing
-them via the `config` parameter in the `nlp.add_pipe(...)` method. For more details
-on custom components and attributes, see the
+The extension sets attributes on the `Doc`, `Span` and `Token`. You can change
+the attribute names (and other parameters of the Emoji component) by passing
+them via the `config` parameter in the `nlp.add_pipe(...)` method. For more
+details on custom components and attributes, see the
 [processing pipelines documentation](https://spacy.io/usage/processing-pipelines#custom-components).
 
 | Attribute            | Type                       | Description                                                   |
@@ -71,8 +74,8 @@ on custom components and attributes, see the
 
 ## Settings
 
-You can configure the `emoji` factory by setting any of the following parameters in
-the `config` dictionary:
+You can configure the `emoji` factory by setting any of the following parameters
+in the `config` dictionary:
 
 | Setting       | Type                      | Description                                                                                                                            |
 | ------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
@@ -89,7 +92,8 @@ assert doc[3]._.is_e
 assert doc[3]._.e_desc == "David Bowie"
 ```
 
-If you're training a pipeline, you can define the component config in your [`config.cfg`](https://spacy.io/usage/training):
+If you're training a pipeline, you can define the component config in your
+[`config.cfg`](https://spacy.io/usage/training):
 
 ```ini
 [nlp]
