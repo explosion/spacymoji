@@ -20,7 +20,7 @@ table provided by the [`emoji` package](https://github.com/carpedm20/emoji).
 
 # ⏳ Installation
 
-`spacymoji` requires `spacy` v3.0.0 or higher. For spaCy v2.x, instally
+`spacymoji` requires `spacy` v3.0.0 or higher. For spaCy v2.x, install
 `spacymoji==2.0.0`.
 
 ```bash
