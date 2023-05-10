@@ -1,13 +1,16 @@
-from typing import Dict, Optional, Tuple, List, Union
-from spacy.tokens import Doc, Span, Token
-from spacy.matcher import PhraseMatcher
-from spacy.language import Language
-from spacy.util import filter_spans
-from emoji import UNICODE_EMOJI
+from typing import Dict, List, Optional, Tuple, Union
 
+# from emoji import UNICODE_EMOJI
+from emoji import EMOJI_DATA
+from spacy.language import Language
+from spacy.matcher import PhraseMatcher
+from spacy.tokens import Doc, Span, Token
+from spacy.util import filter_spans
 
 # Make sure multi-character emoji don't contain whitespace
-EMOJI = {e.replace(" ", ""): t for e, t in UNICODE_EMOJI.items()}
+EMOJI = dict()
+for e, data in EMOJI_DATA.items():
+    EMOJI[e.replace(" ", "")] = data.get("en", "")
 
 DEFAULT_ATTRS = ("has_emoji", "is_emoji", "emoji_desc", "emoji")
 
