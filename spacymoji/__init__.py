@@ -9,8 +9,8 @@ from spacy.util import filter_spans
 
 # Make sure multi-character emoji don't contain whitespace
 EMOJI = dict()
-for t, data in EMOJI_DATA.items():
-    EMOJI[t.replace(" ", "")] = data["en"]
+for e, data in EMOJI_DATA.items():
+    EMOJI[e.replace(" ", "")] = data.get("en", "")
 
 DEFAULT_ATTRS = ("has_emoji", "is_emoji", "emoji_desc", "emoji")
 
